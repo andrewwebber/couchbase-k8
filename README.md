@@ -1,5 +1,9 @@
 # Couchbase K8 - Couchbase on Kubernetes
 
+## Features
+- Auto join of new Couchbase members
+- Auto graceful failover of draining Couchbase members
+
 ## Prerequisites
 - Kubernetes 1.6+ cluster up and running
 - kubectl already setup to point to the cluster
