@@ -13,7 +13,8 @@
 ## Getting started
 
 ### Helm Values
-Review the [helm values](./couchbase/values.yaml) for your Couchbase cluster
+Review the [Etcd](./etcd/values.yaml) and [Couchbase](./couchbase/values.yaml) helm values for your Couchbase cluster
+- Check the name of your storage classes
 
 ### Deploy a master
 ```bash

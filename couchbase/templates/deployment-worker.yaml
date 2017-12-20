@@ -84,7 +84,7 @@ spec:
   - metadata:
       name: couchbase-storage
       annotations:
-        volume.beta.kubernetes.io/storage-class: "standard"
+        volume.beta.kubernetes.io/storage-class: "{{ .Values.storage.class }}"
     spec:
       accessModes: [ "{{ .Values.storage.accessModes }}" ]
       resources:

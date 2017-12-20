@@ -5,9 +5,12 @@ image:
   repository: quay.io/coreos/etcd
   tag: v3.2.4
   pullPolicy: IfNotPresent
-storageSize: 1Gi
+storage:
+  size: 1Gi
+  accessModes: ReadWriteOnce
+  class: standard
 resources:
   limits:
     memory: 1Gi
-  requests:    
+  requests:
     memory: 500Mi

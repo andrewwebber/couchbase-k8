@@ -15,6 +15,7 @@ couchbase:
 storage:
   size: 20Gi
   accessModes: ReadWriteOnce
+  class: standard
 resources:
   requests:
     # cpu: 2
