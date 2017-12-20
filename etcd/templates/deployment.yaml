@@ -1,0 +1,62 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: etcd
+  labels:
+    app: etcd
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+spec:
+  serviceName: "etcd-client"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: etcd
+    spec:
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: etcd-claim
+      containers:
+      - command:
+        - /usr/local/bin/etcd
+        - --name
+        - etcd-0
+        - --initial-advertise-peer-urls
+        - http://etcd-0.etcd-client:2380
+        - --listen-peer-urls
+        - http://0.0.0.0:2380
+        - --listen-client-urls
+        - http://0.0.0.0:2379
+        - --advertise-client-urls
+        - http://etcd-0.etcd-client:2379
+        - --initial-cluster
+        - etcd-0=http://etcd-0.etcd-client:2380
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: {{ .Chart.Name }}
+        ports:
+        - containerPort: 2379
+          name: client
+          protocol: TCP
+        - containerPort: 2380
+          name: server
+          protocol: TCP
+        # readinessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 2379
+        #     # scheme: HTTPS
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 2379
+            # scheme: HTTPS
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        volumeMounts:
+        - name: storage
+          mountPath: /etcd-0.etcd
+      restartPolicy: Always

@@ -1,0 +1,24 @@
+image:
+  repository: docker.io/andrewwebber/couchbase-array
+  tag: 5.0.1
+  pullPolicy: Always
+couchbase:
+  terminationGracePeriodSeconds: 600
+  workerCount: 1
+  adminUserName: Administrator
+  adminPassword: password
+  clusterSize: "3000"
+  etcdPeers: "http://etcd-client:2379"
+  backup:
+    internal: 86400
+    size: 1Gi
+storage:
+  size: 20Gi
+  accessModes: ReadWriteOnce
+resources:
+  requests:
+    # cpu: 2
+    # memory: 3Gi
+  limits:
+    # cpu: 4
+    # memory: 3Gi

@@ -1,0 +1,92 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: couchbase-worker
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+spec:
+  serviceName: "couchbase-master-service"
+  replicas: {{ .Values.couchbase.workerCount }}
+  template:
+    metadata:
+      labels:
+        couchbase-worker: couchbase-worker
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: couchbase-worker
+                  operator: In
+                  values:
+                  - couchbase-worker
+              topologyKey: kubernetes.io/hostname
+      terminationGracePeriodSeconds: {{ .Values.couchbase.terminationGracePeriodSeconds }}
+      imagePullSecrets:
+        - name: {{ .Values.pullSecret }}
+      initContainers:
+      - name: init-waitforetcd
+        image: busybox
+        command: ['sh', '-c', 'until wget --spider --timeout=1 etcd-client:2379/v2/keys; do echo waiting for etcd-client; sleep 2; done;']
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+          - name: couchbase-storage
+            mountPath: /opt/couchbase/var
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+        args: ["--statefulset=.couchbase-master-service"]
+        env:
+          - name: ETCDCTL_PEERS
+            value: "{{ .Values.couchbase.etcdPeers }}"
+          - name: COUCHBASE_ADMIN
+            value: "{{ .Values.couchbase.adminUserName }}"
+          - name: COUCHBASE_PASSWORD
+            value: "{{ .Values.couchbase.adminPassword }}"
+          - name: RAM_SIZE
+            value: "{{ .Values.couchbase.clusterSize }}"
+        ports:
+        - containerPort: 4369
+          name: erlang
+        - containerPort: 8091
+          name: managment
+        - containerPort: 8092
+          name: mapreduce
+        - containerPort: 8093
+          name: query
+        - containerPort: 11210
+          name: keyvalue
+        - containerPort: 11215
+        - containerPort: 11216
+        - containerPort: 11217
+        - containerPort: 11218
+        - containerPort: 11219
+        # readinessProbe:
+        #   httpGet:
+        #     path: /index.html
+        #     port: 8091
+        #     # scheme: HTTPS
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 3
+        livenessProbe:
+          httpGet:
+            path: /index.html
+            port: 8091
+            # scheme: HTTPS
+          initialDelaySeconds: 60
+          periodSeconds: 5
+  volumeClaimTemplates:
+  - metadata:
+      name: couchbase-storage
+      annotations:
+        volume.beta.kubernetes.io/storage-class: "standard"
+    spec:
+      accessModes: [ "{{ .Values.storage.accessModes }}" ]
+      resources:
+        requests:
+          storage: {{ .Values.storage.size }}
