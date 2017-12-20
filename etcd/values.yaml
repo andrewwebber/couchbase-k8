@@ -8,7 +8,7 @@ image:
 storage:
   size: 1Gi
   accessModes: ReadWriteOnce
-  class: standard
+  class: fast
 resources:
   limits:
     memory: 1Gi

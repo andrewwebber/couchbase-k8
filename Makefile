@@ -1,9 +1,11 @@
+NAMESPACE = "kube-system"
+
 all: deploy
 
 deploy: deploy-etcd deploy-couchbase
 
 deploy-etcd:
-	@helm install -n etcd -f ./etcd/values.yaml ./etcd
+	@helm --tiller-namespace=$(NAMESPACE) install -n etcd -f ./etcd/values.yaml ./etcd
 
 deploy-couchbase:
-	@helm install -n couchbase -f ./couchbase/values.yaml ./couchbase
+	@helm --tiller-namespace=$(NAMESPACE) install -n couchbase -f ./couchbase/values.yaml ./couchbase
