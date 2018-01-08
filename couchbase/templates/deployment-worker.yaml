@@ -7,6 +7,10 @@ metadata:
 spec:
   serviceName: "couchbase-master-service"
   replicas: {{ .Values.couchbase.workerCount }}
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
   template:
     metadata:
       labels:
