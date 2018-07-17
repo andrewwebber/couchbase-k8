@@ -1,4 +1,4 @@
-NAMESPACE = "kube-system"
+NAMESPACE = "default"
 
 all: deploy
 

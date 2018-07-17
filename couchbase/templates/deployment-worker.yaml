@@ -44,6 +44,8 @@ spec:
 {{ toYaml .Values.resources | indent 12 }}
         args: ["--statefulset=.couchbase-master-service"]
         env:
+          - name: KUBERNETES
+            value: "KUBERNETES"
           - name: ETCDCTL_PEERS
             value: "{{ .Values.couchbase.etcdPeers }}"
           - name: COUCHBASE_ADMIN
