@@ -1,6 +1,6 @@
 image:
   repository: docker.io/andrewwebber/couchbase-array
-  tag: 5.5.0-0
+  tag: enterprise-5.5.0-0
   pullPolicy: Always
 couchbase:
   terminationGracePeriodSeconds: 600
